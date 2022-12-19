@@ -7,6 +7,7 @@ on:
     branches: [ dev, main ]
 
   # Allows you to run this workflow manually from the Actions tab
+  # Some test change for debugging code sec analysis
   workflow_dispatch:
 
 jobs:
