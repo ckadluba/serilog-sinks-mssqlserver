@@ -3,7 +3,7 @@ name: PR Analysis InferSharp
 on:
   workflow_run:
     workflows: [ "PR Validation" ]
-    branches: [ dev, main ]
+    #branches: [ dev, main ]
     types: 
       - completed
 
@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-analyze:
+  download-and-analyze:
     runs-on: ubuntu-latest
     permissions:
       actions: read
