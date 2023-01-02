@@ -20,8 +20,11 @@ jobs:
 
     steps:
       - name: Upload binaries artifact for InferSharp workflow
-        uses: actions/download-artifact@v3
+        id: download-artifact
+        uses: dawidd6/action-download-artifact@v2
         with:
+          workflow: PR Validation
+          workflow_conclusion: success
           name: bin-net6
 
       - name: Run Infer#      
