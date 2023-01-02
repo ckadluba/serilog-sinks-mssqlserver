@@ -17,7 +17,7 @@ jobs:
         run: ./Build.ps1
 
       - name: Upload binaries artifact for InferSharp workflow
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bin-net6
           path: src\Serilog.Sinks.MSSqlServer\bin\Release\net6.0
