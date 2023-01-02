@@ -19,7 +19,7 @@ jobs:
       security-events: write
 
     steps:
-      - name: Upload binaries artifact for InferSharp workflow
+      - name: Download binaries artifact from PR Validation workflow
         id: download-artifact
         uses: dawidd6/action-download-artifact@v2
         with:
