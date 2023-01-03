@@ -27,6 +27,7 @@ jobs:
           workflow_conclusion: success
           name: bin-net6
           path: bin-net6
+          branch: ${{ github.ref }}
           check_artifacts: true
           search_artifacts: true
 
