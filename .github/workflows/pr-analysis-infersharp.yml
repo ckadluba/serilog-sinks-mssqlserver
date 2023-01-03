@@ -4,7 +4,8 @@ on:
   workflow_run:
     workflows: [ "PR Validation" ]
     #branches: [ dev, main ]
-    types: 
+
+    types:
       - completed
 
   # Allows you to run this workflow manually from the Actions tab
@@ -26,8 +27,10 @@ jobs:
           workflow: pr-validation.yml
           workflow_conclusion: success
           name: bin-net6
+          check_artifacts: true
+          search_artifacts: true
 
-      - name: Run Infer#      
+      - name: Run Infer#
         uses: microsoft/infersharpaction@v1.4
         id: runinfersharp
         with:
