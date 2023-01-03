@@ -24,11 +24,11 @@ jobs:
         id: download-artifact
         uses: dawidd6/action-download-artifact@v2
         with:
-          workflow: pr-validation.yml
+          workflow: "PR Validation"
           workflow_conclusion: success
           name: bin-net6
           path: bin-net6
-          check_artifacts: true
+          # check_artifacts: true
           search_artifacts: true
 
       - name: Run Infer#
