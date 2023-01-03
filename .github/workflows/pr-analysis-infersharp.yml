@@ -28,7 +28,7 @@ jobs:
           name: bin-net6
           path: bin-net6
           check_artifacts: true
-          # search_artifacts: true
+          search_artifacts: true
 
       - name: Run Infer#
         uses: microsoft/infersharpaction@v1.4
