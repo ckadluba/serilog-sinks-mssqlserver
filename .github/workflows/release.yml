@@ -35,6 +35,10 @@ jobs:
         run: ./Build.ps1 -SkipTests
         shell: pwsh
 
+      - name: Run performance tests
+        run: ./RunPerfTests.ps1
+        shell: pwsh
+
       - name: Get last commit message
         id: last_commit
         if: success() && github.ref == 'refs/heads/main'
@@ -47,29 +51,27 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Der Basisname der Dateien basierend auf der Versionsnummer
           $baseFileName = "Serilog.Sinks.MSSqlServer.${{ env.VERSION }}"
 
-          # Suche die exakten Dateipfade für .nupkg und .snupkg
           $nupkgFile = Get-ChildItem -Path "artifacts/$baseFileName*.nupkg" | Select-Object -First 1
           $snupkgFile = Get-ChildItem -Path "artifacts/$baseFileName*.snupkg" | Select-Object -First 1
+          $perfReportPipelineFile = Get-ChildItem -Path "artifacts/Serilog.Sinks.MSSqlServer.PerformanceTests.PipelineBenchmark-report-github.md" `
+            | Select-Object -First 1
 
-          # Überprüfe, ob beide Dateien gefunden wurden
           if (-not $nupkgFile) { Write-Error "nupkg file not found" ; exit 1 }
           if (-not $snupkgFile) { Write-Error "snupkg file not found" ; exit 1 }
+          if (-not $perfReportPipelineFile) { Write-Error "Benchmark report for pipeline file not found" ; exit 1 }
 
-          # Ersetze Backslashes durch Forward Slashes für GitHub CLI-Kompatibilität
           $nupkgFilePath = $nupkgFile.FullName -replace '\\', '/'
           $snupkgFilePath = $snupkgFile.FullName -replace '\\', '/'
+          $perfReportPipelineFilePath = $perfReportPipelineFile.FullName -replace '\\', '/'
 
-          # Ausgabe der Dateipfade zu Debugging-Zwecken
-          Write-Host "Uploading files: $nupkgFilePath, $snupkgFilePath"
+          Write-Host "Uploading files: $nupkgFilePath, $snupkgFilePath $perfReportPipelineFilePath"
 
-          # Erstelle das Release mit den genauen Dateipfaden
           gh release create v${{ env.VERSION }} `
             --title "v${{ env.VERSION }}" `
             --notes "$(Get-Content last_commit_message.txt)" `
-            $nupkgFilePath $snupkgFilePath
+            $nupkgFilePath $snupkgFilePath $perfReportPipelineFilePath
         shell: pwsh
 
       - name: Publish to nuget.org
