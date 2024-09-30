@@ -9,8 +9,7 @@ foreach ($test in Get-ChildItem "$PSScriptRoot/test" -Filter "*.PerformanceTests
 
     echo "perf: Running performance test project in $($src.FullName)"
 
-#    & dotnet test -c Release
-    & dotnet run -c Release
+    & dotnet test -c Release
     if($LASTEXITCODE -ne 0) { exit 2 }
 
     cp ".\bin\Release\net6.0\BenchmarkDotNet.Artifacts\results\*.*" "$PSScriptRoot\artifacts\"

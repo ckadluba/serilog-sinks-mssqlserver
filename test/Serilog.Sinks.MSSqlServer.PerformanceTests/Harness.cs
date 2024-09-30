@@ -18,13 +18,6 @@ public class Harness
     [Fact]
     public void Pipeline()
     {
-        var config = ManualConfig.Create(DefaultConfig.Instance)
-            .WithOptions(ConfigOptions.DisableOptimizationsValidator)
-            .WithOptions(ConfigOptions.DontOverwriteResults)
-            .AddDiagnoser(MemoryDiagnoser.Default)
-            .AddExporter(JsonExporter.Default)
-            .AddLogger(ConsoleLogger.Default); // Logging aktivieren
-
-        BenchmarkRunner.Run<PipelineBenchmark>(config);
+        BenchmarkRunner.Run<PipelineBenchmark>();
     }
 }
