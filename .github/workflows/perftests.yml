@@ -1,9 +1,6 @@
-name: Release
+name: Performance Tests
 
 on:
-  push:
-    branches: [ dev] # Only on push to dev because on push to main the release workflow runs the perf tests
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
