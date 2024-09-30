@@ -8,7 +8,7 @@ namespace Serilog.Sinks.MSSqlServer.PerformanceTests;
 [MemoryDiagnoser]
 public class PipelineBenchmark
 {
-    private const string _connectionString = "Server=localhost;Database=LogTest;Integrated Security=SSPI;Encrypt=False;";
+    private const string _connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Database=LogTest;Integrated Security=SSPI;Encrypt=False;";
     private const string _schemaName = "dbo";
     private const string _tableName = "LogEvents";
     private ILogger _log = null!;
