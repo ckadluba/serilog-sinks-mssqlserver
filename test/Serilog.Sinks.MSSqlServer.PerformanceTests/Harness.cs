@@ -1,4 +1,7 @@
 ﻿using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Diagnosers;
+using BenchmarkDotNet.Exporters.Json;
+using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Running;
 using Xunit;
 
@@ -17,7 +20,10 @@ public class Harness
     {
         var config = ManualConfig.Create(DefaultConfig.Instance)
             .WithOptions(ConfigOptions.DisableOptimizationsValidator)
-            .WithOptions(ConfigOptions.DontOverwriteResults);
+            .WithOptions(ConfigOptions.DontOverwriteResults)
+            .AddDiagnoser(MemoryDiagnoser.Default)
+            .AddExporter(JsonExporter.Default)
+            .AddLogger(ConsoleLogger.Default); // Logging aktivieren
 
         BenchmarkRunner.Run<PipelineBenchmark>(config);
     }
