@@ -1,8 +1,7 @@
 ﻿Push-Location $PSScriptRoot
 
 if (-not (Test-Path "artifacts")) {
-    Remove-Item .\artifacts -Force -Recurse
-    New-Item -Path $directoryPath -ItemType Directory
+    New-Item -Path "artifacts" -ItemType Directory
 }
 
 foreach ($test in Get-ChildItem "$PSScriptRoot/test" -Filter "*.PerformanceTests" -Directory) {

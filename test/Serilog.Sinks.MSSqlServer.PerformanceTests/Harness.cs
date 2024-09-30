@@ -1,4 +1,5 @@
-﻿using BenchmarkDotNet.Running;
+﻿using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Running;
 using Xunit;
 
 namespace Serilog.Sinks.MSSqlServer.PerformanceTests;
@@ -14,6 +15,10 @@ public class Harness
     [Fact]
     public void Pipeline()
     {
-        BenchmarkRunner.Run<PipelineBenchmark>();
+        var config = ManualConfig.Create(DefaultConfig.Instance)
+            .WithOptions(ConfigOptions.DisableOptimizationsValidator)
+            .WithOptions(ConfigOptions.DontOverwriteResults);
+
+        BenchmarkRunner.Run<PipelineBenchmark>(config);
     }
 }
