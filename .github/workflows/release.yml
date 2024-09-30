@@ -55,23 +55,23 @@ jobs:
 
           $nupkgFile = Get-ChildItem -Path "artifacts/$baseFileName*.nupkg" | Select-Object -First 1
           $snupkgFile = Get-ChildItem -Path "artifacts/$baseFileName*.snupkg" | Select-Object -First 1
-          $perfReportPipelineFile = Get-ChildItem -Path "artifacts/Serilog.Sinks.MSSqlServer.PerformanceTests.PipelineBenchmark-report-github.md" `
+          $perfReportSinkFile = Get-ChildItem -Path "artifacts/perftests/Serilog.Sinks.MSSqlServer.PerformanceTests.SinkBenchmarks-report.csv" `
             | Select-Object -First 1
 
           if (-not $nupkgFile) { Write-Error "nupkg file not found" ; exit 1 }
           if (-not $snupkgFile) { Write-Error "snupkg file not found" ; exit 1 }
-          if (-not $perfReportPipelineFile) { Write-Error "Benchmark report for pipeline file not found" ; exit 1 }
+          if (-not $perfReportSinkFile) { Write-Error "Benchmark report for sink file not found" ; exit 1 }
 
           $nupkgFilePath = $nupkgFile.FullName -replace '\\', '/'
           $snupkgFilePath = $snupkgFile.FullName -replace '\\', '/'
-          $perfReportPipelineFilePath = $perfReportPipelineFile.FullName -replace '\\', '/'
+          $perfReportSinkFilePath = $perfReportSinkFile.FullName -replace '\\', '/'
 
           Write-Host "Uploading files: $nupkgFilePath, $snupkgFilePath $perfReportPipelineFilePath"
 
           gh release create v${{ env.VERSION }} `
             --title "v${{ env.VERSION }}" `
             --notes "$(Get-Content last_commit_message.txt)" `
-            $nupkgFilePath $snupkgFilePath $perfReportPipelineFilePath
+            $nupkgFilePath $snupkgFilePath $perfReportSinkFilePath
         shell: pwsh
 
       - name: Publish to nuget.org

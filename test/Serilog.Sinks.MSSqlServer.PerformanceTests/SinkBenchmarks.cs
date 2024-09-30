@@ -2,11 +2,8 @@
 
 namespace Serilog.Sinks.MSSqlServer.PerformanceTests;
 
-/// <summary>
-/// Tests the cost of writing through the logging pipeline.
-/// </summary>
 [MemoryDiagnoser]
-public class PipelineBenchmark
+public class SinkBenchmarks
 {
     private const string _connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Database=LogTest;Integrated Security=SSPI;Encrypt=False;";
     private const string _schemaName = "dbo";

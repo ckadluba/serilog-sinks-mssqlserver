@@ -1,9 +1,4 @@
-﻿using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Diagnosers;
-using BenchmarkDotNet.Exporters.Json;
-using BenchmarkDotNet.Loggers;
-using BenchmarkDotNet.Running;
-using Xunit;
+﻿using BenchmarkDotNet.Running;
 
 namespace Serilog.Sinks.MSSqlServer.PerformanceTests;
 
@@ -13,11 +8,10 @@ namespace Serilog.Sinks.MSSqlServer.PerformanceTests;
 /// <example>
 /// <code>dotnet test -c Release --filter "FullyQualifiedName=Serilog.Sinks.MSSqlServer.PerformanceTests.Harness.Pipeline"</code>
 /// </example>
-public class Harness
+public class Program
 {
-    [Fact]
-    public void Pipeline()
+    public static void Main()
     {
-        BenchmarkRunner.Run<PipelineBenchmark>();
+        BenchmarkRunner.Run<SinkBenchmarks>();
     }
 }

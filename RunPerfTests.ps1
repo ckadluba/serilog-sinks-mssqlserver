@@ -1,20 +1,21 @@
 ﻿Push-Location $PSScriptRoot
 
-if (-not (Test-Path "artifacts")) {
-    New-Item -Path "artifacts" -ItemType Directory
+$artifactsPath = "$PSScriptRoot\artifacts\perftests"
+
+if (Test-Path "$artifactsPath") {
+    echo "perf: Cleaning $artifactsPath"
+    Remove-Item "$artifactsPath" -Force -Recurse
 }
 
-foreach ($test in Get-ChildItem "$PSScriptRoot/test" -Filter "*.PerformanceTests" -Directory) {
-    Push-Location $test.FullName
+New-Item -Path "$artifactsPath" -ItemType Directory
 
-    echo "perf: Running performance test project in $($src.FullName)"
+$perfTestProjectPath "$PSScriptRoot/test/Serilog.Sinks.MSSqlServer.PerformanceTests"
+Push-Location "$perfTestProjectPath"
 
-    & dotnet test -c Release
-    if($LASTEXITCODE -ne 0) { exit 2 }
+echo "perf: Running performance test project in $perfTestProjectPath"
+& dotnet run -c Release
 
-    cp ".\bin\Release\net6.0\BenchmarkDotNet.Artifacts\results\*.*" "$PSScriptRoot\artifacts\"
-
-    Pop-Location
-}
+cp ".\BenchmarkDotNet.Artifacts\results\*.*" "$artifactsPath\"
+Pop-Location
 
 Pop-Location

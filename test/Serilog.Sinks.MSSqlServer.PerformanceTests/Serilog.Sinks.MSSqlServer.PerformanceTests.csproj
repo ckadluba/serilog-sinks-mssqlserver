@@ -4,13 +4,10 @@
     <TargetFramework>net6.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyName>Serilog.Sinks.MSSqlServer.PerformanceTests</AssemblyName>
+    <OutputType>Exe</OutputType>
     <AssemblyOriginatorKeyFile>../../assets/Serilog.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
-    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
-    <PackageId>Serilog.Sinks.MSSqlServer.PerformanceTests</PackageId>
-    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <RuntimeIdentifiers>win</RuntimeIdentifiers>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <AnalysisLevel>6.0-recommended</AnalysisLevel>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
@@ -19,26 +16,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Serilog.Sinks.MSSqlServer\Serilog.Sinks.MSSqlServer.csproj"/>
     <PackageReference Include="BenchmarkDotNet" />
-    <PackageReference Include="FluentAssertions"/>
-    <PackageReference Include="Dapper.StrongName"/>
-    <PackageReference Include="Microsoft.NET.Test.Sdk"/>
-    <PackageReference Include="Moq"/>
-    <PackageReference Include="xunit"/>
-    <PackageReference Include="xunit.runner.visualstudio"/>
-    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.0"/>
   </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="BenchmarkDotNet.Artifacts\results\20240930-123643\Serilog.Sinks.MSSqlServer.PerformanceTests.PipelineBenchmark-report.html" />
-    <None Remove="BenchmarkDotNet.Artifacts\results\20240930-123643\Serilog.Sinks.MSSqlServer.PerformanceTests.PipelineBenchmark-report.csv" />
-    <None Remove="BenchmarkDotNet.Artifacts\results\20240930-123643\Serilog.Sinks.MSSqlServer.PerformanceTests.PipelineBenchmark-report-github.md" />
-    <None Remove="BenchmarkDotNet.Artifacts\results\20240930-121934\Serilog.Sinks.MSSqlServer.PerformanceTests.PipelineBenchmark-report.html" />
-    <None Remove="BenchmarkDotNet.Artifacts\results\20240930-121934\Serilog.Sinks.MSSqlServer.PerformanceTests.PipelineBenchmark-report-github.md" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="BenchmarkDotNet.Artifacts\results\20240930-121934\" />
-    <Folder Include="BenchmarkDotNet.Artifacts\results\20240930-123643\" />
-  </ItemGroup>
-
+  
 </Project>
