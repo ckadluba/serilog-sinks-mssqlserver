@@ -9,7 +9,7 @@ if (Test-Path "$artifactsPath") {
 
 New-Item -Path "$artifactsPath" -ItemType Directory
 
-$perfTestProjectPath "$PSScriptRoot/test/Serilog.Sinks.MSSqlServer.PerformanceTests"
+$perfTestProjectPath = "$PSScriptRoot/test/Serilog.Sinks.MSSqlServer.PerformanceTests"
 Push-Location "$perfTestProjectPath"
 
 echo "perf: Running performance test project in $perfTestProjectPath"
