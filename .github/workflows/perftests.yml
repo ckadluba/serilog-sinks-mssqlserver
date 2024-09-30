@@ -5,12 +5,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-release:
+  build-and-perftest:
     runs-on: windows-latest # Build on Windows to ensure .NET Framework targets
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Run build
         run: ./Build.ps1 -SkipTests
