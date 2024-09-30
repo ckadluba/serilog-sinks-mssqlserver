@@ -8,7 +8,7 @@ if (-not (Test-Path "artifacts")) {
 foreach ($test in Get-ChildItem "$PSScriptRoot/test" -Filter "*.PerformanceTests" -Directory) {
     Push-Location $test.FullName
 
-    echo "perf: Running performance test project in $test"
+    echo "perf: Running performance test project in $($src.FullName)"
 
     & dotnet test -c Release
     if($LASTEXITCODE -ne 0) { exit 2 }
