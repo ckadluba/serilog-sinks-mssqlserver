@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Serilog.Debugging;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer.Output;
-using static System.FormattableString;
 
 namespace Serilog.Sinks.MSSqlServer.Platform
 {
@@ -16,6 +15,8 @@ namespace Serilog.Sinks.MSSqlServer.Platform
         private readonly string _schemaName;
         private readonly ISqlConnectionFactory _sqlConnectionFactory;
         private readonly ILogEventDataGenerator _logEventDataGenerator;
+        private readonly StringBuilder _fieldList = new StringBuilder();
+        private string _fieldListSql = string.Empty;
 
         public SqlInsertStatementWriter(
             string tableName,
@@ -25,8 +26,10 @@ namespace Serilog.Sinks.MSSqlServer.Platform
         {
             _tableName = tableName ?? throw new ArgumentNullException(nameof(tableName));
             _schemaName = schemaName ?? throw new ArgumentNullException(nameof(schemaName));
-            _sqlConnectionFactory = sqlConnectionFactory ?? throw new ArgumentNullException(nameof(sqlConnectionFactory));
-            _logEventDataGenerator = logEventDataGenerator ?? throw new ArgumentNullException(nameof(logEventDataGenerator));
+            _sqlConnectionFactory =
+                sqlConnectionFactory ?? throw new ArgumentNullException(nameof(sqlConnectionFactory));
+            _logEventDataGenerator =
+                logEventDataGenerator ?? throw new ArgumentNullException(nameof(logEventDataGenerator));
         }
 
         public Task WriteBatch(IEnumerable<LogEvent> events, DataTable dataTable) => WriteBatch(events);
@@ -40,14 +43,19 @@ namespace Serilog.Sinks.MSSqlServer.Platform
                 using (var cn = _sqlConnectionFactory.Create())
                 {
                     await cn.OpenAsync().ConfigureAwait(false);
-
-                    foreach (var logEvent in events)
+                    using (var command = cn.CreateCommand())
                     {
-                        using (var command = cn.CreateCommand())
-                        {
-                            command.CommandType = CommandType.Text;
+                        command.CommandType = CommandType.Text;
 
-                            var fieldList = new StringBuilder(Invariant($"INSERT INTO [{_schemaName}].[{_tableName}] ("));
+                        foreach (var logEvent in events)
+                        {
+                            // Optimization: fieldlist is equal for all log events, so create it only once
+                            if (_fieldListSql == string.Empty)
+                            {
+                                CreateFieldListSql(logEvent);
+                            }
+
+
                             var parameterList = new StringBuilder(") VALUES (");
 
                             var index = 0;
@@ -55,26 +63,23 @@ namespace Serilog.Sinks.MSSqlServer.Platform
                             {
                                 if (index != 0)
                                 {
-                                    fieldList.Append(',');
                                     parameterList.Append(',');
                                 }
 
-                                fieldList.Append(Invariant($"[{field.Key}]"));
                                 parameterList.Append("@P");
                                 parameterList.Append(index);
 
-                                command.AddParameter(Invariant($"@P{index}"), field.Value);
+                                command.AddParameter("@P" + index, field.Value);
 
                                 index++;
                             }
 
                             parameterList.Append(')');
-                            fieldList.Append(parameterList);
 
-                            command.CommandText = fieldList.ToString();
-
-                            await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                            command.CommandText += _fieldListSql + parameterList + ";" + Environment.NewLine;
                         }
+
+                        await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                     }
                 }
             }
@@ -83,6 +88,32 @@ namespace Serilog.Sinks.MSSqlServer.Platform
                 SelfLog.WriteLine("Unable to write log event to the database due to following error: {0}", ex);
                 throw;
             }
+        }
+
+        private void CreateFieldListSql(LogEvent logEvent)
+        {
+            _fieldList.Append("INSERT INTO [");
+            _fieldList.Append(_schemaName);
+            _fieldList.Append("].[");
+            _fieldList.Append(_tableName);
+            _fieldList.Append("] (");
+
+            var index = 0;
+            foreach (var field in _logEventDataGenerator.GetColumnsAndValues(logEvent))
+            {
+                if (index != 0)
+                {
+                    _fieldList.Append(',');
+                }
+
+                _fieldList.Append('[');
+                _fieldList.Append(field.Key);
+                _fieldList.Append(']');
+
+                index++;
+            }
+
+            _fieldListSql = _fieldList.ToString();
         }
     }
 }
