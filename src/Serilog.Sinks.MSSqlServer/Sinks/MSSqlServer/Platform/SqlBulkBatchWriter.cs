@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog.Debugging;
@@ -17,6 +16,7 @@ namespace Serilog.Sinks.MSSqlServer.Platform
         private readonly bool _disableTriggers;
         private readonly ISqlConnectionFactory _sqlConnectionFactory;
         private readonly ILogEventDataGenerator _logEventDataGenerator;
+        private readonly string _schemaAndTableName;
 
         public SqlBulkBatchWriter(
             string tableName,
@@ -30,6 +30,7 @@ namespace Serilog.Sinks.MSSqlServer.Platform
             _disableTriggers = disableTriggers;
             _sqlConnectionFactory = sqlConnectionFactory ?? throw new ArgumentNullException(nameof(sqlConnectionFactory));
             _logEventDataGenerator = logEventDataGenerator ?? throw new ArgumentNullException(nameof(logEventDataGenerator));
+            _schemaAndTableName = "[" + _schemaName + "].[" + _tableName + "]";
         }
 
         public async Task WriteBatch(IEnumerable<LogEvent> events, DataTable dataTable)
@@ -41,12 +42,11 @@ namespace Serilog.Sinks.MSSqlServer.Platform
                 using (var cn = _sqlConnectionFactory.Create())
                 {
                     await cn.OpenAsync().ConfigureAwait(false);
-                    using (var copy = cn.CreateSqlBulkCopy(_disableTriggers,
-                        string.Format(CultureInfo.InvariantCulture, "[{0}].[{1}]", _schemaName, _tableName)))
+                    using (var copy = cn.CreateSqlBulkCopy(_disableTriggers, _schemaAndTableName))
                     {
-                        foreach (var column in dataTable.Columns)
+                        for (var i = 0; i < dataTable.Columns.Count; i++)
                         {
-                            var columnName = ((DataColumn)column).ColumnName;
+                            var columnName = dataTable.Columns[i].ColumnName;
                             copy.AddSqlBulkCopyColumnMapping(columnName, columnName);
                         }
 
@@ -68,7 +68,8 @@ namespace Serilog.Sinks.MSSqlServer.Platform
 
         private void FillDataTable(IEnumerable<LogEvent> events, DataTable dataTable)
         {
-            // Add the new rows to the collection. 
+            // Add the new rows to the collection.
+            dataTable.BeginLoadData();
             foreach (var logEvent in events)
             {
                 var row = dataTable.NewRow();
@@ -81,7 +82,7 @@ namespace Serilog.Sinks.MSSqlServer.Platform
                 dataTable.Rows.Add(row);
             }
 
-            dataTable.AcceptChanges();
+            dataTable.EndLoadData();
         }
     }
 }
